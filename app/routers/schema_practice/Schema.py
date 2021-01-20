@@ -28,3 +28,8 @@ class Car(BaseModel):
                 'price': 100.55
             } 
         }
+
+@router.put("/schema/{item_id}",tags=["schema"])
+async def update_schma_item(item_id: int, car: Car):
+    results = {"item_id":item_id,"car":Car}
+    return results

@@ -23,11 +23,13 @@ import re
 from app.Product import Product, Phone
 from app.routers.animal import Animal
 from app.routers.vehicle import Vehicle
+from app.routers.schema_practice import Schema
 
 
 app = FastAPI()
 app.include_router(Animal.router)
 app.include_router(Vehicle.router)
+app.include_router(Schema.router)
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'
