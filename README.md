@@ -1,0 +1,1 @@
+Here is project for practicing Python fastapi
