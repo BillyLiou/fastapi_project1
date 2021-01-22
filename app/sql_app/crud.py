@@ -9,5 +9,9 @@
 @Desc    :   None
 '''
 
-#TODO: 這邊寫到一半之後python對接資料庫從這開始寫
+from sqlalchemy.orm import Session
+from . import schemas, models
+
+def get_animals(db: Session, animal_id: int):
+    return db.query(models.Animal).filter(models.Animal.id == animal_id).first()
 
