@@ -10,7 +10,7 @@
 '''
 
 from fastapi import  APIRouter, Depends
-from app.sql_app import crud,models,schemas
+from app.sql_app import crud,models
 from app.sql_app.database import sessionLocal , engine
 from sqlalchemy.orm import Session
 

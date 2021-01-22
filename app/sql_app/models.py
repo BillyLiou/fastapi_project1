@@ -10,7 +10,6 @@
 '''
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
 from .database import Base
 
 class Animal(Base):
@@ -19,4 +18,4 @@ class Animal(Base):
     name =  Column(String)
     height = Column(String)
     weight = Column(String)
-    classification = Column(String)
+    classification = Column(Integer)

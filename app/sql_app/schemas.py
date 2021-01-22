@@ -13,7 +13,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class AnimalBase(BaseModel):
-    title: str
+    title: Optional[str]
     description: Optional[str]
         
 
@@ -22,4 +22,4 @@ class Animal(AnimalBase):
     name: str
     height: str
     weight: str
-    classification: str
+    classification: int
