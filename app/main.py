@@ -10,7 +10,7 @@
 '''
 # 啟動app的指令 uvicorn app.main:app --reload
 
-from fastapi import FastAPI, Query, Path, Body
+from fastapi import FastAPI, Query, Path, Body,Header,Response
 from typing import Optional
 from pydantic import BaseModel, Field
 import uvicorn
@@ -160,9 +160,14 @@ async def read_user_item(user_id: str, item_id: str, q: Optional[str] = None, sh
     return item
 
 
+
+# 以此方式在response的header可以呈現當前的值
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
+def update_item(item_id: int, item: Item,x_api_key: Optional[str] = Header(None), response:Response = None):
+    if  x_api_key:
+        response.headers["x-api-key"] = x_api_key
     return {"item_name": item.name, "item_id": item_id}
+    # return {"strange_header": x_api_key}
 
 
 # 以下是api轉換 Enum 的範例

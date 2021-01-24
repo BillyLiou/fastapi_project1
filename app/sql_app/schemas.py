@@ -23,3 +23,5 @@ class Animal(AnimalBase):
     height: str
     weight: str
     classification: int
+    class Config:
+        orm_mode=True

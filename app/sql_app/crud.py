@@ -13,5 +13,7 @@ from sqlalchemy.orm import Session
 from . import models
 
 def get_animals(db: Session, animal_id: int):
-    return db.query(models.Animal).filter(models.Animal.id == animal_id).first()
+    res = db.query(models.Animal).filter(models.Animal.id == animal_id).first()
+    print(type(res))
+    return res
 

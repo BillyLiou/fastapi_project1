@@ -10,7 +10,7 @@
 '''
 
 from fastapi import  APIRouter, Depends
-from app.sql_app import crud,models
+from app.sql_app import crud,models,schemas
 from app.sql_app.database import sessionLocal , engine
 from sqlalchemy.orm import Session
 
@@ -28,7 +28,7 @@ def get_db():
 async def read_animal():
     return [{"animal_name":"Catty"},{"animal_name":"John"}]
 
-@router.get("/animal/{animal_id}",tags=["animal"])
+@router.get("/animal/{animal_id}",tags=["animal"],response_model=schemas.Animal)
 async def read_animal_mysql(animal_id: int,db: Session = Depends(get_db)):
     animal =  crud.get_animals(db,animal_id)
     return animal
