@@ -24,12 +24,14 @@ from app.Product import Product, Phone
 from app.routers.animal import Animal
 from app.routers.vehicle import Vehicle
 from app.routers.schema_practice import Schema
+from app.routers.response_model_practice import Cake
 
 
 app = FastAPI()
 app.include_router(Animal.router)
 app.include_router(Vehicle.router)
 app.include_router(Schema.router)
+app.include_router(Cake.router)
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'
@@ -123,7 +125,7 @@ async def validate_phone(q: Optional[str] = Query(None, regex='^[0-9\-]+$', alia
 
 @app.get("/items/{item_id}")
 def read_item(item_id: str, q: Optional[str] = None, short: bool = False):
-    logging.info("get parameter: {}".format("/items/"+item_id))
+    # logging.info("get parameter: {}".format("/items/"+item_id))
     # 第一版的寫法
     # if q:
     #    return {"item_id": item_id,  "q":q}
@@ -201,6 +203,7 @@ async def create_item(product: Product):
         price_with_tax = product.price + product.tax
         product_dict.update({"price_with_tax": price_with_tax})
     return product_dict
+
 
 
 # if __name__ == '__main__':
