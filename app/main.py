@@ -26,6 +26,7 @@ from app.routers.vehicle import Vehicle
 from app.routers.schema_practice import Schema
 from app.routers.response_model_practice import Cake
 from app.routers.auth import Login
+from app.routers.error_practice import Error
 
 
 app = FastAPI()
@@ -34,6 +35,7 @@ app.include_router(Vehicle.router)
 app.include_router(Schema.router)
 app.include_router(Cake.router)
 app.include_router(Login.router)
+app.include_router(Error.router)
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'
