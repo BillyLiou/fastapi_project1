@@ -10,7 +10,13 @@
 '''
 # 啟動app的指令 uvicorn app.main:app --reload
 
-from fastapi import FastAPI, Query, Path, Body,Header,Response
+from fastapi import FastAPI, Query, Path, Body, Header, Response, Request, HTTPException,status
+from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.exceptions import ValidationError,RequestValidationError
+from fastapi.encoders import jsonable_encoder
+
+from starlette.exceptions import HTTPException as starletteHTTPException
+
 from typing import Optional
 from pydantic import BaseModel, Field
 import uvicorn
@@ -33,13 +39,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-    "http://127.0.0.1"
-]
+# origins = [
+#     "http://localhost.tiangolo.com",
+#     "https://localhost.tiangolo.com",
+#     "http://localhost",
+#     "http://localhost:8080",
+#     "http://127.0.0.1"
+# ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -62,11 +68,71 @@ DATE_FORMAT = '%Y%m%d %H:%M:%S'
 log_filename = datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S.log")
 # logging.basicConfig(level=logging.INFO, format=FORMAT,filename=log_filename, filemode='w')
 
+# 先設訂一個自定義的Exception然後有個 @app.exception_handler去定義返回的字段以及錯誤碼為何
+
+
+class UvicornException(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+
+# 以下兩個function為一組自定義error如何回傳
+@app.exception_handler(UvicornException)
+async def uvicron_exception_handler(request: Request, exc: UvicornException):
+    return JSONResponse(
+        status_code=418,
+        content={
+            "message": f"{exc.name} is Wrong!! This is message for custom error",
+        }
+    )
+
+@app.get("/testerror/{name}")
+async def get_error_name(name: str):
+    if name == 'billy':
+        raise UvicornException(name=name)
+    return {"test_name": name}
+
+
+# 以下兩個function為一組自定義starlette如何在某個api實作,同上但寫法上不一樣
+@app.exception_handler(starletteHTTPException)
+async def handle_validation_error(request: Request, exc):
+    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
+
+
+@app.get("/testerror2/{id}")
+async def get_error_name2(id: int):
+    if id == 1:
+        raise HTTPException(status_code=418,detail={"message":"Oh no your input name will get error 418"})
+    return {"test_id": id}
+
+
+# 以下又是另一組錯誤處理的程式碼範例
+# 這邊有一個關鍵,雖然Testerror型別範例是可以篩選出int的,但如果傳遞的值為
+# {"title":"topic","size":"5"}
+# 以上範例是可以允許的,應該是因為
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request:Request, exc:RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder({"detail":exc.errors(),"body":exc.body})
+    )
+class Testerror(BaseModel):
+    title: str
+    size: int
+
+@app.post("/testerror3")
+async def handle_test_error3(testerror: Testerror):
+    """
+    這是一個測試是否會被RequestValidationError攔截到的範例api
+    """
+    return testerror
+
+# 根目錄api訪問
 
 @app.get("/")
 async def root():
-    logging.info('Receive root')
-    return {"message": "Hello World"}
+    # logging.info('Receive root')
+    return {"message": "OK網路有通"}
 
 
 # 以下是api請求 轉換Item 物件的範例
@@ -120,8 +186,8 @@ async def read_items3(
         result.update({"q": q})
     return result
 
-# use from pydantic import Field
 
+# use from pydantic import Field
 
 @app.put("/items4/{item_id}")
 async def update_item(item_id: int, item: Item2 = Body(..., embed=False)):
@@ -185,11 +251,10 @@ async def read_user_item(user_id: str, item_id: str, q: Optional[str] = None, sh
     return item
 
 
-
 # 以此方式在response的header可以呈現當前的值
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item,x_api_key: Optional[str] = Header(None), response:Response = None):
-    if  x_api_key:
+def update_item(item_id: int, item: Item, x_api_key: Optional[str] = Header(None), response: Response = None):
+    if x_api_key:
         response.headers["x-api-key"] = x_api_key
     return {"item_name": item.name, "item_id": item_id}
     # return {"strange_header": x_api_key}
@@ -226,7 +291,6 @@ async def create_item(product: Product):
         price_with_tax = product.price + product.tax
         product_dict.update({"price_with_tax": price_with_tax})
     return product_dict
-
 
 
 # if __name__ == '__main__':

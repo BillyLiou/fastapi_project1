@@ -18,6 +18,7 @@ list_error = [{
     "user": "Billy"
 }]
 
+
 @router.get("/error/{id}")
 async def read_user_handle_error(id: int):
     # 這裏或許可以用pandas的方式去查找欄位是否符合來實作
