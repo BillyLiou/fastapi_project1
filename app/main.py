@@ -34,6 +34,7 @@ from app.routers.response_model_practice import Cake
 from app.routers.auth import Login
 from app.routers.error_practice import Error
 from app.routers.description import description
+from app.routers.items import update_item
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -63,6 +64,7 @@ app.include_router(Cake.router)
 app.include_router(Login.router)
 app.include_router(Error.router)
 app.include_router(description.router)
+app.include_router(update_item.router)
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'
