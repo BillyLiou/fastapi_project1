@@ -35,7 +35,7 @@ from app.routers.auth import Login
 from app.routers.error_practice import Error
 from app.routers.description import description
 from app.routers.items import update_item
-
+from app.routers.DI import di_practice
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -65,6 +65,7 @@ app.include_router(Login.router)
 app.include_router(Error.router)
 app.include_router(description.router)
 app.include_router(update_item.router)
+app.include_router(di_practice.router)
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'
@@ -199,12 +200,15 @@ async def update_item(item_id: int, item: Item2 = Body(..., embed=False)):
     results = {"item_id":  item_id, "item": item}
     return results
 
-
+#TODO:帶有「;」的入參會把;之後的去除,但希望可以忠實呈現校驗不通過
+# 不知道為什麼,regex的機制是「;」後面會直接被移除,後需需要研究看看是不是可以當作有特殊符號所有校驗不通過而不是刪除後面的部分
 @app.get("/phone")
-async def validate_phone(q: Optional[str] = Query(None, regex='^[0-9\-]+$', alias="qqqBB")):
+async def validate_phone(q: Optional[str] = Query(None, regex="^[0-9\-]+$", alias="qqqBB")):
+    print('初始密碼:{}'.format(q))
     res = {}
     p = re.compile('[0-9]{10}')
     m = "".join(re.findall('\d+', str(q)))
+    print('這兒,{}'.format(m))
     reg_res = p.match(m)
     if reg_res:
         res.update({"q": q})
