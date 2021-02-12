@@ -19,12 +19,14 @@ async def common_def_v1(q:Optional[str] = None, skip: int = 0, limit: int = 100)
 async def common_verify_body(customer: common_interface.Customer = Body(...)):
     return customer
 
+# 依據x-api-key去校驗是否符合x-api-key
 async def common_verify_header_token(x_api_key: str = Header(...)):
     if x_api_key != common_interface.CustomHeader.x_api_key.value:
         print("api-key錯囉")
         raise  HTTPException(status_code=401,detail={"err_message":"x-api-key is wrong"})
     return x_api_key
 
+# 依據x-token去校驗是否是符合token
 async def common_verify_header_api_key(x_token: str = Header(...)):
     if x_token != common_interface.CustomHeader.x_token.value:
         print("token錯囉")

@@ -35,7 +35,8 @@ from app.routers.auth import Login
 from app.routers.error_practice import Error
 from app.routers.description import description
 from app.routers.items import update_item
-from app.routers.DI import di_practice
+# from app.routers.DI import di_practice
+from app.routers.DI.di_practice import router as di_practice_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -65,7 +66,7 @@ app.include_router(Login.router)
 app.include_router(Error.router)
 app.include_router(description.router)
 app.include_router(update_item.router)
-app.include_router(di_practice.router)
+app.include_router(di_practice_router,tags=['di'],prefix='/di_test')
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'

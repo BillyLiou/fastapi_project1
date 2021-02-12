@@ -15,8 +15,8 @@ from app.routers.DI import common_def,common_interface
 router = APIRouter()
 
 
-# 以下為
-@router.get("/di_test",tags=["di"])
+# 以下為這個模塊的初始prefix
+@router.get("/")
 async def get_di_test(commons: dict = Depends(common_def.common_def_v1)):
     return commons
 
@@ -26,11 +26,11 @@ async def get_di_test(commons: dict = Depends(common_def.common_def_v1)):
 #     return common_customer
 
 # 想要校驗body的作法就是有一個common_def裡面有個實作common_verify_body去校驗這個body是否滿足這個格式
-@router.post("/di_test_customer_body", tags=["di"])
+@router.post("/di_test_customer_body")
 async def get_di_test_customer_verify_body(common_customer: dict = Depends(common_def.common_verify_body)):
     return common_customer
 
-@router.post("/di_test_customer_header",tags=["di"],dependencies=[Depends(common_def.common_verify_header_token),Depends(common_def.common_verify_header_api_key)])
+@router.post("/di_test_customer_header",dependencies=[Depends(common_def.common_verify_header_token),Depends(common_def.common_verify_header_api_key)])
 async def get_di_test_customer_verify_header(common_customer: dict = Depends(common_def.common_verify_body),response: Response = None,request: Request = None):
     response.headers["x-api-key"] = request.headers["x-api-key"]
     response.headers["x-token"] = request.headers["x-token"]
