@@ -10,7 +10,7 @@
 '''
 
 from typing import Optional
-from fastapi import Body, Header, HTTPException
+from fastapi import Body, Header, HTTPException,Depends,Cookie
 from app.routers.DI import common_interface
 
 async def common_def_v1(q:Optional[str] = None, skip: int = 0, limit: int = 100):
@@ -32,3 +32,16 @@ async def common_verify_header_api_key(x_token: str = Header(...)):
         print("token錯囉")
         raise HTTPException(status_code=401,detail={"err_message":"x-token is wrong"})
     return x_token
+
+
+# 實作兩個function作為dependency的範例
+def query_extractor(q: Optional[str] = None):
+    return q
+
+def query_or_cookie_extractor(
+    q: str = Depends(query_extractor),last_query: Optional[str] = None
+):
+    if not q:
+        return last_query
+    else:
+        return q

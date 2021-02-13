@@ -15,6 +15,8 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.exceptions import ValidationError,RequestValidationError
 from fastapi.encoders import jsonable_encoder
 
+
+
 from starlette.exceptions import HTTPException as starletteHTTPException
 
 from typing import Optional
@@ -24,6 +26,8 @@ from enum import Enum
 import logging
 import datetime
 import re
+import os 
+import toml
 
 
 from app.Product import Product, Phone
@@ -37,9 +41,13 @@ from app.routers.description import description
 from app.routers.items import update_item
 # from app.routers.DI import di_practice
 from app.routers.DI.di_practice import router as di_practice_router
+from app.config import app_config
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
+
+# 創建一個fastapi的instance
 app = FastAPI()
 
 # origins = [
@@ -74,9 +82,39 @@ DATE_FORMAT = '%Y%m%d %H:%M:%S'
 log_filename = datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S.log")
 # logging.basicConfig(level=logging.INFO, format=FORMAT,filename=log_filename, filemode='w')
 
+
+# 定義服務啟動的時候會做些什麼事情
+@app.on_event("startup")
+def set_config():
+    print('API startup')
+    show_service_name()
+    get_config()
+    print('API startup finished!!!')
+
+# 獲取基本配置(此測試專案是使用toml作為配置)
+def get_config() :
+    setting_path = os.environ.get("MY_CONFIG", "/Users/billyliou/Desktop/Python/fastapi_project1/main-profile.toml")
+    config = toml.load(setting_path,_dict=dict)
+    app_config.config_dict = config
+
+# print出此服務的名字
+def show_service_name():
+    print('===========================================')
+    print("""
+
+ ________  ______   ______    _________       ____    ____       _       _____  ____  _____  
+|_   __  ||_   _ \ |_   _ `. |  _   _  |     |_   \  /   _|     / \     |_   _||_   \|_   _| 
+  | |_ \_|  | |_) |  | | `. \|_/ | | \_|______ |   \/   |      / _ \      | |    |   \ | |   
+  |  _|     |  __'.  | |  | |    | |   |______|| |\  /| |     / ___ \     | |    | |\ \| |   
+ _| |_     _| |__) |_| |_.' /   _| |_         _| |_\/_| |_  _/ /   \ \_  _| |_  _| |_\   |_  
+|_____|   |_______/|______.'   |_____|       |_____||_____||____| |____||_____||_____|\____| 
+                                                                                             
+
+    """)
+    print('===========================================')
+
+
 # 先設訂一個自定義的Exception然後有個 @app.exception_handler去定義返回的字段以及錯誤碼為何
-
-
 class UvicornException(Exception):
     def __init__(self, name: str):
         self.name = name

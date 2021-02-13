@@ -1,0 +1,14 @@
+title = "Test fastapi project"
+
+author = "Billy"
+
+[owner]
+name = "FB Dev Group"
+
+[owner.dev]
+name = "Billy"
+member = 2
+
+[owner.user]
+name = "FBDT"
+member = 500
