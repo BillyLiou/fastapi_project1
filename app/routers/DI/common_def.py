@@ -39,9 +39,12 @@ def query_extractor(q: Optional[str] = None):
     return q
 
 def query_or_cookie_extractor(
-    q: str = Depends(query_extractor),last_query: Optional[str] = None
+    q: str = Depends(query_extractor),last_query: Optional[str] = Cookie(None)
 ):
     if not q:
+        print('print cache')
+        print(last_query)
         return last_query
     else:
+        print('print current')
         return q
