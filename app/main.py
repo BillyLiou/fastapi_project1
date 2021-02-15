@@ -50,6 +50,9 @@ from fastapi.middleware.cors import CORSMiddleware
 # 創建一個fastapi的instance
 app = FastAPI()
 
+# # 可以以此作法創建一個全局校驗token和key等等屬性的dependency
+# app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
+
 # origins = [
 #     "http://localhost.tiangolo.com",
 #     "https://localhost.tiangolo.com",
