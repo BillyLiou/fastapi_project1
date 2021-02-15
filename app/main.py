@@ -195,6 +195,7 @@ class Item(BaseModel):
     is_offer: Optional[bool] = None
 
 
+# 若要使用Field作為參數可以此作為參考
 class Item2(BaseModel):
     name: str
     description: Optional[str] = Field(
