@@ -41,7 +41,14 @@ from app.routers.description import description
 from app.routers.items import update_item
 # from app.routers.DI import di_practice
 from app.routers.DI.di_practice import router as di_practice_router
+from app.routers.auth import oauth
+
+# 獲取配置檔案
 from app.config import app_config
+
+# 初始版本號
+from fastapi.openapi.utils import get_openapi
+
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -49,6 +56,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # 創建一個fastapi的instance
 app = FastAPI()
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="FBDT",
+        version="1.0.0",
+        description="This is a very custom OpenAPI schema",
+        routes=app.routes,
+    )
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+app.openapi = custom_openapi
 
 # # 可以以此作法創建一個全局校驗token和key等等屬性的dependency
 # app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
@@ -78,6 +101,7 @@ app.include_router(Error.router)
 app.include_router(description.router)
 app.include_router(update_item.router)
 app.include_router(di_practice_router,tags=['di'],prefix='/di_test')
+app.include_router(oauth.router,tags=['oauth'],prefix='/oauth')
 
 # 寫入日誌 & 日誌相關格式及檔案名配置
 FORMAT = '[%(asctime)s] [%(levelname)s][%(module)s:%(lineno)d] %(message)s'
